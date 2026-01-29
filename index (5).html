@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn Money - Fast Ads</title>
+    
+    <script src="https://sdk.startapp.com/startapp.js"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0b0e14; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .app-box { background: #161b22; padding: 30px; border-radius: 25px; text-align: center; width: 340px; border: 2px solid #30363d; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+        .wallet { background: linear-gradient(135deg, #238636, #2ea043); padding: 20px; border-radius: 15px; margin-bottom: 25px; }
+        #balance { font-size: 36px; font-weight: 800; color: white; }
+        .earn-btn { background: #1f6feb; color: white; border: none; padding: 18px; font-size: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; box-shadow: 0 4px 12px rgba(31, 111, 235, 0.3); transition: 0.2s; }
+        .earn-btn:disabled { background: #484f58; cursor: not-allowed; box-shadow: none; opacity: 0.6; }
+        #status { margin-top: 15px; font-size: 14px; color: #8b949e; }
+    </style>
+</head>
+<body>
+
+<div class="app-box">
+    <div class="wallet">
+        <p style="margin:0; font-size:12px; opacity:0.8; letter-spacing: 1px;">कुल अर्निंग</p>
+        <div id="balance">₹0.00</div>
+    </div>
+
+    <button id="btn" class="earn-btn" onclick="runRealAd()">विज्ञापन देखें (15s)</button>
+    <p id="status">Status: तैयार</p>
+</div>
+
+<script>
+    // आपकी असली App ID
+    const MY_APP_ID = "200696433"; 
+    let myMoney = parseFloat(localStorage.getItem('earn_cash_bal')) || 0.00;
+
+    // बैलेंस दिखाना
+    document.getElementById('balance').innerText = "₹" + myMoney.toFixed(2);
+
+    // SDK को शुरू करना
+    try {
+        StartApp.init(MY_APP_ID);
+    } catch(e) {
+        console.error("SDK Error:", e);
+    }
+
+    function runRealAd() {
+        const btn = document.getElementById('btn');
+        const status = document.getElementById('status');
+
+        status.innerText = "विज्ञापन लोड हो रहा है...";
+        btn.disabled = true;
+
+        // विज्ञापन दिखाने का प्रयास
+        try {
+            // विज्ञापन दिखाएँ
+            StartApp.showInterstitial();
+            
+            // रिवॉर्ड देने की प्रक्रिया
+            setTimeout(() => {
+                giveMoney();
+                waitTimer(15); // आपके लिए 15 सेकंड का टाइमर
+            }, 3000);
+
+        } catch (err) {
+            status.innerText = "Error: होस्टिंग की ज़रूरत है (Host Required)";
+            btn.disabled = false;
+        }
+    }
+
+    function giveMoney() {
+        myMoney += 0.25; // प्रति एड 25 पैसे
+        localStorage.setItem('earn_cash_bal', myMoney);
+        document.getElementById('balance').innerText = "₹" + myMoney.toFixed(2);
+        document.getElementById('status').innerText = "बधाई! ₹0.25 मिल गए।";
+    }
+
+    function waitTimer(sec) {
+        const btn = document.getElementById('btn');
+        let time = sec;
+        const clock = setInterval(() => {
+            document.getElementById('status').innerText = `अगला मौका ${time}s बाद...`;
+            time--;
+            if (time < 0) {
+                clearInterval(clock);
+                btn.disabled = false;
+                document.getElementById('status').innerText = "Status: तैयार!";
+            }
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>
